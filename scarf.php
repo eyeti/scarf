@@ -1,7 +1,5 @@
 <?php
 
-namespace iriki;
-
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Factory\AppFactory;
@@ -15,9 +13,11 @@ class scarf
 	//SlimPHP in this case
 	private $_http = null;
 
+	private $_state = array();
+
 	//the scarf tie is a cycle: a http request, parsed, a system of nouns and verbs to match the parsed
 	//and then the appropriate function to call and a valid response
-	public static function tie(object &$instance, array $options = array(), $iriki_function)
+	public static function tie(object &$instance, array $options = array(), $scarf_function)
 	{
 		//intercept some routes esp for CORS, debug, documentation etc
 		//OPTIONS
@@ -31,11 +31,13 @@ class scarf
 			'data' => $options['body'] //'This is some random data'
 		);*/
 
-		$uri_format = Self::uri_format;
-
 		if (isset($options['uri_format']))
 		{
 			$uri_format = $options['uri_format'];
+		}
+		else
+		{
+			$uri_format = Self::uri_format;
 		}
 
 		if (is_null($instance->_http))
@@ -45,7 +47,7 @@ class scarf
 
 		if (!is_null($instance->_http))
 		{
-			$instance->_http->any($uri_format, function(Request $request, Response $response, $args) use ($options, $tie_function) {
+			$instance->_http->any($uri_format, function(Request $request, Response $response, $args) use ($options, $scarf_function) {
 				$instance->_state = array(
 					'request' => array(
 						'ip' => $_SERVER['REMOTE_ADDR'],
@@ -64,16 +66,12 @@ class scarf
 					'response' => null
 				);
 
-				//$instance->_request = $request;
-				//$instance->_response = $response;
-
-
 				//this is the entry point to other code
 				//we parse on the scarf instance and other options
 
 				//ideally, scarf_response should hold some data
 				
-				$instance->_state['response'] = Self::iriki(
+				$instance->_state['response'] = $scarf_function(
 					$instance->_state,
 					array(
 						'start' => gettimeofday(true),
@@ -91,37 +89,14 @@ class scarf
 
 				$instance->_state['response']['end'] = gettimeofday(true);
 
-				//$scarf_response = $instance->_state['response'];
-
-				//var_dump($instance->_state['response']);
-
-
 				//this is the easy write
 				//one may want to do an xml, json or other write
-				//return Self::write($instance, $scarf_response['code'], $scarf_response['data'], $options);
-
-				//return Self::ok($instance, json_encode($scarf_response), $options);
-
-				/*return Self::write(
-					$instance,
-					(isset($scarf_response['code']) ? $scarf_response['code'] : 500),
-					json_encode($scarf_response),
-					$options
-				);*/
-
-				/*$instance->_state['response']->withStatus(207);
-
-				$body = $instance->_state['response']->getBody();
-
-				$body->write(['something weird']);
-
-				return $instance->_state['response'];*/
 
 				$response = $response->withStatus(207);
 
 				$body = $response->getBody();
 
-				$body->write($instance->_state['response']);
+				$body->write(json_encode($instance->_state['response']));
 
 				return $response;
 			});
@@ -130,20 +105,6 @@ class scarf
 		}
 
 		return true;
-	}
-
-	//this is the entry point into iriki
-	//state is the http state
-	//default is a default response to be used if the state doesn't trigger anything in iriki
-	//public static function iriki($state, $default)
-	public static function $iriki_function = function ($state, $default)
-	{
-		$r = array(
-			'state' => $state,
-			'default' => $default
-		);
-
-		return $r;
 	}
 }
 

@@ -1,0 +1,25 @@
+# -FrontPage-
+
+IndexIgnore .htaccess */.??* *~ *# */HEADER* */README* */_vti*
+
+<Limit GET POST PUT DELETE>
+order deny,allow
+deny from all
+allow from all
+</Limit>
+
+Options -MultiViews -Indexes
+
+RewriteEngine on
+#RewriteBase /
+
+#force https
+#RewriteCond %{HTTPS} !^on$
+#RewriteRule (.*) https://foobar/$1 [R,L]
+
+#move all requests to the index file
+RewriteRule ^(.*)$ index.php?$1 [L]
+
+#url not found
+#this isn't necessary for now
+#ErrorDocument 404 /404
