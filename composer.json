@@ -1,0 +1,9 @@
+{
+    "name": "stigwue/scarf",
+    "description": "A simple HTTP request-response cycle.",
+    "require": {
+        "slim/slim": "^4.5",
+        "slim/psr7": "^1.2",
+        "guzzlehttp/guzzle": "^7.1"
+    }
+}
