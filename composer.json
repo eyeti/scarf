@@ -1,5 +1,5 @@
 {
-    "name": "stigwue/scarf",
+    "name": "eyeti/scarf",
     "description": "A simple HTTP request-response cycle.",
     "require": {
         "slim/slim": "^4.5",
