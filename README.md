@@ -2,5 +2,5 @@
 
 # Scarf
 
-Scarf is a simple script which parses a HTTP request, and formats a response.
+Scarf is a simple script which parses a HTTP request, formats and returns a response.
 
