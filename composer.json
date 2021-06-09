@@ -1,6 +1,10 @@
 {
     "name": "eyeti/scarf",
     "description": "A simple HTTP request-response cycle.",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {"eyeti\\scarf\\": "src/"}
+    },
     "require": {
         "slim/slim": "^4.5",
         "slim/psr7": "^1.2",
